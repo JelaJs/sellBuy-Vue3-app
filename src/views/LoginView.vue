@@ -28,11 +28,13 @@ const email = ref('')
 const password = ref('')
 const router = useRouter()
 const loginError = ref(null)
+//const userId = ref(null)
 
 const login = () => {
   signInWithEmailAndPassword(getAuth(), email.value, password.value)
     .then((cred) => {
-      //console.log('user created', cred.user)
+      //console.log('user created', cred.user.uid)
+      //userId.value = cred.user.uid
       email.value = ''
       password.value = ''
       loginError.value = null
