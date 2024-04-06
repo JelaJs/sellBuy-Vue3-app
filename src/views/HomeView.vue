@@ -1,16 +1,21 @@
 <template>
   <main>
     <h1>Home page</h1>
-    <input type="file" @change="uploadLocal($event)" />
-    <div v-if="myImg">
-      <img :src="myImg" />
-      <button @click="uploadtoFirebase">Upload</button>
-    </div>
+    <ul v-if="prodRef">
+      <li v-for="product in products" :key="product.id" @click="goTosingleProduct(product.id)">
+        <img :src="product.imageUrl" :alt="product.imageName" />
+        <p>{{ product.productType }}</p>
+        <p>{{ product.productName }}</p>
+        <p>{{ product.productDescription }}</p>
+        <p>{{ product.productPrice }}</p>
+      </li>
+    </ul>
   </main>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   db,
   getStorage,
@@ -21,78 +26,52 @@ import {
   getDoc,
   setDoc,
   collection,
-  addDoc
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy
 } from '@/firebase'
 
-const myImg = ref(null)
-const imgs = ref(null)
-const extention = ref(null)
-const name = ref(null)
-let reader = new FileReader()
+const router = useRouter()
+const products = ref([])
+const dateSortedProducts = ref([])
+const priceSortedProducts = ref([])
+const priceToLowerSortedProducts = ref([])
+const prodRef = collection(db, 'products')
+const sortedByDateRef = query(prodRef, orderBy('createdAt', 'desc')) //od najmladjeg ka najstarijem, ovo po difotu prvo mi je od najstarijeg do najmladjeg
+const sortedByPriceRef = query(prodRef, orderBy('productPrice')) //od najjeftinijeg do najskupljeg
+const toLowerSortedPriceRef = query(prodRef, orderBy('productPrice', 'desc'))
 
-const getFileExt = (file) => {
-  let temp = file.name.split('.')
-  let ext = temp.slice(temp.length - 1, temp.length)
-  return '.' + ext[0]
-}
-
-const getFileName = (file) => {
-  let temp = file.name.split('.')
-  let fName = temp.slice(0, -1).join('.')
-  return fName
-}
-
-const uploadLocal = (e) => {
-  if (!e.target.files) return
-
-  imgs.value = e.target.files
-  extention.value = getFileExt(imgs.value[0])
-  name.value = getFileName(imgs.value[0])
-
-  reader.readAsDataURL(imgs.value[0])
-}
-
-reader.addEventListener('load', () => {
-  myImg.value = reader.result
+onSnapshot(prodRef, (snapshot) => {
+  snapshot.docs.forEach((doc) => {
+    products.value.push({ ...doc.data(), id: doc.id })
+  })
+  console.log(products.value)
 })
 
-const uploadtoFirebase = async () => {
-  let imgToUpload = imgs.value[0]
-
-  let imgName = name.value + extention.value
-
-  const metaData = {
-    contentType: imgToUpload.type
-  }
-
-  const storage = getStorage()
-  const storageRef = sRef(storage, 'images/' + imgName)
-  const uploadTask = uploadBytesResumable(storageRef, imgToUpload, metaData)
-
-  uploadTask.on(
-    'state_changed',
-    (snapshot) => {
-      let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-    },
-    (error) => {
-      console.log('img not uploaded', error.message)
-    },
-    () => {
-      getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
-        //console.log(downloadUrl)
-        saveToFirestoredb(downloadUrl)
-      })
-    }
-  )
-}
-
-const saveToFirestoredb = async (url) => {
-  let ref = doc(db, 'cars/' + name.value)
-
-  await setDoc(ref, {
-    ImageName: name.value + extention.value,
-    ImageURL: url
+onSnapshot(sortedByDateRef, (snapshot) => {
+  snapshot.docs.forEach((doc) => {
+    dateSortedProducts.value.push({ ...doc.data(), id: doc.id })
   })
+  console.log('date sorted', dateSortedProducts.value)
+})
+
+onSnapshot(sortedByPriceRef, (snapshot) => {
+  snapshot.docs.forEach((doc) => {
+    priceSortedProducts.value.push({ ...doc.data(), id: doc.id })
+  })
+  console.log('price sorted', priceSortedProducts.value)
+})
+
+onSnapshot(toLowerSortedPriceRef, (snapshot) => {
+  snapshot.docs.forEach((doc) => {
+    priceToLowerSortedProducts.value.push({ ...doc.data(), id: doc.id })
+  })
+  console.log('price to lower sorted', priceToLowerSortedProducts.value)
+})
+
+const goTosingleProduct = (id) => {
+  router.push(`/singleproduct/${id}`)
 }
 </script>
 

@@ -1,19 +1,20 @@
 <template>
   <main>
+    <p v-if="username">{{ username }}</p>
     <button @click="addProduct = true">
-      {{ usersProducts.length <= 0 ? 'Add New Product' : 'Update Product' }}
+      {{ userProduct ? 'Update Product' : 'Add New Product' }}
     </button>
     <div v-if="addProduct" @click.stop="addProduct = false" class="overlay">
       <div @click.stop="">
         <AddProduct v-if="addProduct" @closeModal="closeProductModal" />
       </div>
     </div>
-    <ul v-if="usersProducts.length > 0">
-      <li v-for="product in usersProducts" :key="product.productName">
-        <img :src="product.imageUrl" alt="" />
-        <p>{{ product.productName }}</p>
-        <p>{{ product.productPrice }}</p>
-        <p>{{ product.productDescription }}</p>
+    <ul v-if="userProduct">
+      <li>
+        <img :src="userProduct.imageUrl" alt="" />
+        <p>{{ userProduct.productName }}</p>
+        <p>{{ userProduct.productPrice }}</p>
+        <p>{{ userProduct.productDescription }}</p>
         <button @click="deleteProduct">Delete</button>
       </li>
     </ul>
@@ -37,24 +38,31 @@ import {
 import AddProduct from '../components/AddProduct.vue'
 
 const addProduct = ref(false)
-const usersProducts = ref([])
+const userProduct = ref(null)
 const productRef = ref(null)
+const userRef = ref(null)
+const username = ref(null)
 
 onAuthStateChanged(getAuth(), (user) => {
   if (user) {
     productRef.value = doc(db, 'products', user.uid)
+    userRef.value = doc(db, 'users', user.uid)
     //const docRef = doc(db, 'products', user.uid)
     onSnapshot(productRef.value, (doc) => {
       //console.log('doc data', { ...doc.data() })
       const objectData = doc.data()
       if (objectData) {
-        usersProducts.value = Object.entries(objectData).map(([key, value]) => value)
-        console.log('users products', usersProducts.value)
+        userProduct.value = doc.data()
       }
+    })
+
+    onSnapshot(userRef.value, (doc) => {
+      const userData = doc.data()
+      username.value = userData.username
     })
   } else {
     //console.log("user logged out");
-    usersProducts.value = []
+    userProduct.value = null
   }
 })
 
@@ -62,7 +70,7 @@ const deleteProduct = () => {
   //await deleteDoc(doc(productRef.value, product))
   deleteDoc(productRef.value).then(() => {
     onSnapshot(collection(db, 'products'), () => {
-      usersProducts.value = []
+      userProduct.value = null
     })
   })
 }

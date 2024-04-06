@@ -39,11 +39,11 @@ const registerError = ref(null)
 const register = () => {
   createUserWithEmailAndPassword(getAuth(), email.value, password.value)
     .then((cred) => {
-      setDoc(doc(db, 'users', cred.user.uid), {
+      return setDoc(doc(db, 'users', cred.user.uid), {
         username: userName.value,
         email: cred.user.email
       })
-      return setDoc(doc(db, 'products', cred.user.uid), {})
+      //return setDoc(doc(db, 'products', cred.user.uid), {})
     })
     .then(() => {
       userName.value = ''

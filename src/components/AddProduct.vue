@@ -128,17 +128,15 @@ const saveToFirestoredb = async (url) => {
   const userRef = doc(db, 'products', userId.value)
   const userData = {
     // Add a new field with a dynamic name based on timestamp
-    [`image_${Date.now()}`]: {
-      imageName: name.value + extention.value,
-      imageUrl: url,
-      productName: productName.value,
-      productPrice: productPrice.value,
-      productDescription: productDescription.value,
-      productType: productType.value,
-      productComments: [],
-      productLikes: 0,
-      createdAt: serverTimestamp()
-    }
+    imageName: name.value + extention.value,
+    imageUrl: url,
+    productName: productName.value,
+    productPrice: productPrice.value,
+    productDescription: productDescription.value,
+    productType: productType.value,
+    productComments: [],
+    productLikes: 0,
+    createdAt: serverTimestamp()
   }
   await setDoc(userRef, userData).then(() => {
     emit('closeModal')
@@ -151,14 +149,12 @@ onAuthStateChanged(getAuth(), (user) => {
 
   onSnapshot(existingProduct.value, (doc) => {
     console.log('uslov prosao', doc.data())
-    const objectData = doc.data()
-    const userProduct = Object.entries(objectData).map(([key, value]) => value)
-    console.log('users products', userProduct[0])
-    if (userProduct[0]) {
-      productName.value = userProduct[0].productName
-      productPrice.value = userProduct[0].productPrice
-      productDescription.value = userProduct[0].productDescription
-      productType.value = userProduct[0].productType
+    const userProduct = doc.data()
+    if (userProduct) {
+      productName.value = userProduct.productName
+      productPrice.value = userProduct.productPrice
+      productDescription.value = userProduct.productDescription
+      productType.value = userProduct.productType
     }
   })
 })

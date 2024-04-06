@@ -13,7 +13,8 @@ import {
   updateDoc,
   deleteField,
   deleteDoc,
-  serverTimestamp
+  serverTimestamp,
+  orderBy
 } from 'firebase/firestore'
 
 import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
@@ -61,5 +62,6 @@ export {
   deleteField,
   updateDoc,
   deleteDoc,
-  serverTimestamp
+  serverTimestamp,
+  orderBy
 }
