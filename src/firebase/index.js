@@ -9,8 +9,13 @@ import {
   addDoc,
   onSnapshot,
   where,
-  query
+  query,
+  updateDoc,
+  deleteField,
+  deleteDoc,
+  serverTimestamp
 } from 'firebase/firestore'
+
 import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import {
   getAuth,
@@ -52,5 +57,9 @@ export {
   onAuthStateChanged,
   onSnapshot,
   where,
-  query
+  query,
+  deleteField,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp
 }

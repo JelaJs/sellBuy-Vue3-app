@@ -1,10 +1,11 @@
 <template>
   <main class="addProductPopup">
-    <h1>This is User page</h1>
+    <h1>Add Product</h1>
     <input type="file" @change="uploadLocal($event)" />
     <div v-if="myImg">
       <img :src="myImg" />
     </div>
+    <div v-if="!myImg">Add image</div>
     <form @submit.prevent="uploadData">
       <input type="text" v-model="productName" placeholder="Product Name" required />
       <input type="number" v-model="productPrice" placeholder="Product Price" required />
@@ -35,9 +36,12 @@ import {
   doc,
   setDoc,
   onAuthStateChanged,
-  getAuth
+  getAuth,
+  serverTimestamp,
+  onSnapshot
 } from '@/firebase'
 
+const existingProduct = ref(null)
 const myImg = ref(null)
 const imgs = ref(null)
 const extention = ref(null)
@@ -48,6 +52,10 @@ const productPrice = ref('')
 const productDescription = ref('')
 const productType = ref('')
 let reader = new FileReader()
+
+const emit = defineEmits(['CloseModal'])
+
+//set fileds if product already exist
 
 const getFileExt = (file) => {
   let temp = file.name.split('.')
@@ -76,11 +84,13 @@ reader.addEventListener('load', () => {
 })
 
 const uploadData = async () => {
+  console.log('imgs value', imgs.value)
   if (
     !productName.value ||
     !productPrice.value ||
     !productDescription.value ||
-    !productType.value
+    !productType.value ||
+    !imgs.value
   ) {
     alert('All fields are required')
     return
@@ -126,14 +136,31 @@ const saveToFirestoredb = async (url) => {
       productDescription: productDescription.value,
       productType: productType.value,
       productComments: [],
-      productLikes: 0
+      productLikes: 0,
+      createdAt: serverTimestamp()
     }
   }
-  await setDoc(userRef, userData, { merge: true }) // Merge option ensures existing fields are not overwritten
+  await setDoc(userRef, userData).then(() => {
+    emit('closeModal')
+  })
 }
 
 onAuthStateChanged(getAuth(), (user) => {
   userId.value = user.uid
+  existingProduct.value = doc(db, 'products', user.uid)
+
+  onSnapshot(existingProduct.value, (doc) => {
+    console.log('uslov prosao', doc.data())
+    const objectData = doc.data()
+    const userProduct = Object.entries(objectData).map(([key, value]) => value)
+    console.log('users products', userProduct[0])
+    if (userProduct[0]) {
+      productName.value = userProduct[0].productName
+      productPrice.value = userProduct[0].productPrice
+      productDescription.value = userProduct[0].productDescription
+      productType.value = userProduct[0].productType
+    }
+  })
 })
 </script>
 
