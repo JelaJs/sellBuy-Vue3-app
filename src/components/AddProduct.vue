@@ -52,6 +52,9 @@ const productPrice = ref('')
 const productDescription = ref('')
 const productType = ref('')
 let reader = new FileReader()
+const curUser = ref(null)
+const phone = ref(null)
+const userName = ref(null)
 
 const emit = defineEmits(['CloseModal'])
 
@@ -135,7 +138,8 @@ const saveToFirestoredb = async (url) => {
     productDescription: productDescription.value,
     productType: productType.value,
     productComments: [],
-    productLikes: 0,
+    phone: phone.value,
+    username: userName.value,
     createdAt: serverTimestamp()
   }
   await setDoc(userRef, userData).then(() => {
@@ -146,6 +150,7 @@ const saveToFirestoredb = async (url) => {
 onAuthStateChanged(getAuth(), (user) => {
   userId.value = user.uid
   existingProduct.value = doc(db, 'products', user.uid)
+  curUser.value = doc(db, 'users', user.uid)
 
   onSnapshot(existingProduct.value, (doc) => {
     console.log('uslov prosao', doc.data())
@@ -156,6 +161,12 @@ onAuthStateChanged(getAuth(), (user) => {
       productDescription.value = userProduct.productDescription
       productType.value = userProduct.productType
     }
+  })
+
+  onSnapshot(curUser.value, (doc) => {
+    console.log('curUser', doc.data())
+    phone.value = doc.data().phone
+    userName.value = doc.data().username
   })
 })
 </script>
