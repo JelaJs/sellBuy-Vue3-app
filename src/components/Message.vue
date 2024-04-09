@@ -1,8 +1,12 @@
 <template>
   <div class="msg-wrap">
     <p>To: {{ username }}</p>
-    <ul v-if="messages.length > 0">
-      <li :class="{ cur: props.curUserId === msg.curId }" v-for="msg in messages" :key="msg.msgId">
+    <ul v-if="filteredMessages.length > 0">
+      <li
+        :class="{ cur: props.curUserId === msg.senderId }"
+        v-for="msg in filteredMessages"
+        :key="msg.msgId"
+      >
         <p>{{ msg.message }}</p>
       </li>
     </ul>
@@ -12,22 +16,9 @@
 </template>
 
 <script setup>
-//RADI IZMEDJU 2 KORISNIKA NE RADI KAD SE DODA TRECI
 import { ref, defineProps } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
-import {
-  db,
-  getStorage,
-  sRef,
-  uploadBytesResumable,
-  getDownloadURL,
-  doc,
-  setDoc,
-  onAuthStateChanged,
-  getAuth,
-  serverTimestamp,
-  onSnapshot
-} from '@/firebase'
+import { db, doc, setDoc, onSnapshot } from '@/firebase'
 
 const props = defineProps({
   id: String,
@@ -35,45 +26,47 @@ const props = defineProps({
   curUser: String,
   curUserId: String
 })
+
 const message = ref('')
 const messages = ref([])
-const messageRef = ref(doc(db, 'messages', props.id))
-const curUserMessageRef = ref(doc(db, 'messages', props.curUserId))
+const messagesRef = doc(db, 'messages', 'all-messages')
 
-onSnapshot(curUserMessageRef.value, (doc) => {
-  messages.value = doc.data().message
-  console.log('Proslo', messages.value)
+onSnapshot(messagesRef, (doc) => {
+  messages.value = doc.exists() ? doc.data().messages : []
+})
+
+const filteredMessages = ref([])
+onSnapshot(messagesRef, (doc) => {
+  filteredMessages.value = doc.exists()
+    ? doc
+        .data()
+        .messages.filter(
+          (msg) =>
+            (msg.senderId === props.curUserId && msg.receiverId === props.id) ||
+            (msg.senderId === props.id && msg.receiverId === props.curUserId)
+        )
+    : []
 })
 
 const sendMessage = () => {
   if (message.value === '') return
-  //messageRef.value = doc(db, 'messages', props.id)
-  //curUserMessageRef.value = doc(db, 'messages', props.curUserId)
-  messages.value.push({
-    message: message.value,
-    curId: props.curUserId,
-    msgId: uuidv4()
-  })
 
-  const messageData = {
-    user: props.curUser,
-    message: messages.value,
-    curUserId: props.curUserId,
-    userId: props.id
+  const newMessage = {
+    message: message.value,
+    senderId: props.curUserId,
+    receiverId: props.id,
+    msgId: uuidv4()
   }
 
-  setDoc(messageRef.value, messageData).then(() => {
-    message.value = ''
-  })
+  messages.value.push(newMessage)
 
-  setDoc(curUserMessageRef.value, messageData).then(() => {
-    message.value = ''
-  })
-
-  onSnapshot(curUserMessageRef.value, (doc) => {
-    messages.value = doc.data().message
-    console.log('Proslo', message.value)
-  })
+  setDoc(messagesRef, { messages: messages.value })
+    .then(() => {
+      message.value = ''
+    })
+    .catch((error) => {
+      console.error('Error sending message: ', error)
+    })
 }
 </script>
 
