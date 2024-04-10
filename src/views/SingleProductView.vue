@@ -1,30 +1,51 @@
 <template>
   <main v-if="productData">
-    <img :src="productData.imageUrl" :alt="productData.imageName" />
-    <p>{{ productData.username }}</p>
-    <p>{{ productData.phone }}</p>
-    <p>{{ productData.productName }}</p>
-    <p>{{ productData.productDescription }}</p>
-    <p>{{ productData.productPrice }}€</p>
-    <ul v-if="productComms.length > 0">
-      <li v-for="comm in productComms" :key="comm.id">
-        <p>{{ comm.user }}</p>
-        <p>{{ comm.comment }}</p>
-        <button :class="{ hide: comm.curId !== curUserId }" @click="removeComment(comm.id)">
-          Remove
-        </button>
-      </li>
-    </ul>
-    <input v-model="comment" type="text" placeholder="Add a comment" @keyup.enter="addComment" />
-    <button @click="addComment">Add</button>
-    <button v-if="sendBtn" @click="sendMessage = true">Send Message</button>
-    <Message
-      v-if="sendMessage"
-      :id="id"
-      :username="productData.username"
-      :curUser="username"
-      :curUserId="curUserId"
-    />
+    <div class="container">
+      <div class="product-img-info-wrap">
+        <img :src="productData.imageUrl" :alt="productData.imageName" />
+        <div>
+          <p class="info-header">User Info</p>
+          <p class="inner-info"><span>User:</span> {{ productData.username }}</p>
+          <p class="inner-info"><span>Phone:</span> {{ productData.phone }}</p>
+          <button class="send-message" v-if="sendBtn" @click="sendMessage = true">
+            Send Message
+          </button>
+          <p class="info-header product-info">Product Info</p>
+          <p class="inner-info"><span>Name:</span> {{ productData.productName }}</p>
+          <p class="inner-info"><span>Description:</span> {{ productData.productDescription }}</p>
+          <p class="inner-info"><span>Price:</span> {{ productData.productPrice }}€</p>
+        </div>
+      </div>
+      <p class="comments-p">Comments:</p>
+      <ul v-if="productComms.length > 0">
+        <li v-for="comm in productComms" :key="comm.id">
+          <p class="user-com">{{ comm.user }}</p>
+          <div class="com-btn-wrap">
+            <p>{{ comm.comment }}</p>
+            <button :class="{ hide: comm.curId !== curUserId }" @click="removeComment(comm.id)">
+              Remove
+            </button>
+          </div>
+        </li>
+      </ul>
+      <div v-if="isUserLoggedIn">
+        <input
+          v-model="comment"
+          type="text"
+          placeholder="Add a comment"
+          @keyup.enter="addComment"
+        />
+        <button class="post-com-btn" @click="addComment">Add</button>
+      </div>
+
+      <Message
+        v-if="sendMessage"
+        :id="id"
+        :username="productData.username"
+        :curUser="username"
+        :curUserId="curUserId"
+      />
+    </div>
   </main>
 </template>
 
@@ -46,6 +67,7 @@ const username = ref(null)
 const sendMessage = ref(false)
 const curUserId = ref(null)
 const sendBtn = ref(true)
+const isUserLoggedIn = ref(false)
 const toRemove = ref(true)
 //const phoneNumber = ref(null)
 
@@ -65,6 +87,8 @@ onAuthStateChanged(getAuth(), (user) => {
       curUserId.value = user.uid
     })
 
+    isUserLoggedIn.value = true
+
     if (user.uid === id.value) {
       sendBtn.value = false
     } else {
@@ -72,6 +96,7 @@ onAuthStateChanged(getAuth(), (user) => {
     }
   } else {
     sendBtn.value = false
+    isUserLoggedIn.value = false
   }
 })
 
@@ -101,13 +126,104 @@ const removeComment = (id) => {
 </script>
 
 <style scoped>
+.product-img-info-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  padding: 2rem;
+}
+
 img {
   width: 20rem;
   height: 20rem;
+  object-fit: cover;
+}
+
+.product-img-info-wrap .info-header {
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.product-img-info-wrap .product-info {
+  margin-top: 3rem;
+}
+
+.product-img-info-wrap .send-message {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  border: none;
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-top: 1.5rem;
+  color: #fff;
+  background-color: rgb(106, 106, 255);
+  border-radius: 10px;
+}
+
+.product-img-info-wrap .inner-info {
+  margin-left: 0.5rem;
+  font-size: 1.8rem;
+  margin-top: 1rem;
+}
+
+.product-img-info-wrap .inner-info span {
+  font-weight: 500;
+}
+
+.comments-p {
+  margin-top: 3rem;
 }
 
 ul {
-  margin-top: 3rem;
+  margin-top: 1rem;
+  list-style: none;
+}
+
+ul li {
+  padding: 1rem;
+  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+}
+
+ul li .user-com {
+  font-weight: 500;
+  color: #999999;
+}
+
+ul li .com-btn-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+ul li .com-btn-wrap button {
+  background-color: transparent;
+  border: none;
+  color: rgb(175, 45, 45);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+input {
+  width: 90%;
+  height: 3.5rem;
+  padding: 1rem;
+  outline: 0;
+  border: 1px solid rgb(106, 106, 255);
+  border-right: none;
+}
+
+.post-com-btn {
+  height: 3.5rem;
+  border: none;
+  background-color: rgb(106, 106, 255);
+  color: #fff;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.post-com-btn {
+  width: 10%;
 }
 
 .hide {

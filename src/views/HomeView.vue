@@ -115,6 +115,7 @@ ul {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 3rem;
+  row-gap: 15rem;
   margin-top: 2rem;
 }
 
@@ -136,7 +137,7 @@ ul li .prod-type {
 
 ul li .prod-name {
   font-size: 2rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-top: 0.2rem;
   text-transform: uppercase;
 }
