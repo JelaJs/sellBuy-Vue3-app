@@ -52,11 +52,11 @@ onMounted(() => {
 .nav a {
   text-decoration: none;
   color: #000;
-  font-size: 2.1rem;
+  font-size: 2rem;
 }
 
 .nav a.add-prod-link {
-  padding: 0.5rem 1rem;
+  padding: 1rem 2rem;
   background-color: rgb(106, 106, 255);
   color: #fff;
   border-radius: 20px;

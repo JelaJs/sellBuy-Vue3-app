@@ -1,8 +1,8 @@
 <template>
   <main>
     <div class="container center">
-      <form @submit.prevent="register">
-        <h1>Create Account</h1>
+      <form class="form" @submit.prevent="register">
+        <h2>Create Account</h2>
         <div>
           <label for="userName">Name:</label>
           <input v-model="userName" type="text" placeholder="Jhon" required />
@@ -23,8 +23,13 @@
             This field is required and needs to be at least 8 characters long
           </p>
         </div>
-        <button>SignUp</button>
-        <RouterLink to="/login">Login</RouterLink>
+        <div class="btn-wrap">
+          <button>SignUp</button>
+        </div>
+        <div class="p-btn-wrap">
+          <p>Already have account?</p>
+          <RouterLink to="/login">Login</RouterLink>
+        </div>
         <p v-if="registerError">{{ registerError }}</p>
       </form>
     </div>

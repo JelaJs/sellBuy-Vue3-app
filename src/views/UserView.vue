@@ -1,23 +1,27 @@
 <template>
   <main>
-    <p v-if="username">{{ username }}</p>
-    <button @click="addProduct = true">
-      {{ userProduct ? 'Update Product' : 'Add New Product' }}
-    </button>
-    <div v-if="addProduct" @click.stop="addProduct = false" class="overlay">
-      <div @click.stop="">
-        <AddProduct v-if="addProduct" @closeModal="closeProductModal" />
+    <div class="container">
+      <p class="username-p" v-if="username">
+        You are currently logged in as: <span class="username">{{ username }}</span>
+      </p>
+      <button class="addProd-btn" @click="addProduct = true">
+        {{ userProduct ? 'Update Product' : 'Add New Product' }}
+      </button>
+      <div v-if="addProduct" @click.stop="addProduct = false" class="overlay">
+        <div @click.stop="">
+          <AddProduct v-if="addProduct" @closeModal="closeProductModal" />
+        </div>
       </div>
+      <ul v-if="userProduct">
+        <li>
+          <img :src="userProduct.imageUrl" alt="" />
+          <p><span>Name:</span> {{ userProduct.productName }}</p>
+          <p><span>Price:</span> {{ userProduct.productPrice }} €</p>
+          <p><span>Description:</span> {{ userProduct.productDescription }}</p>
+          <button class="prod-delete-btn" @click="deleteProduct">Delete</button>
+        </li>
+      </ul>
     </div>
-    <ul v-if="userProduct">
-      <li>
-        <img :src="userProduct.imageUrl" alt="" />
-        <p>{{ userProduct.productName }}</p>
-        <p>{{ userProduct.productPrice }}</p>
-        <p>{{ userProduct.productDescription }}</p>
-        <button @click="deleteProduct">Delete</button>
-      </li>
-    </ul>
   </main>
 </template>
 
@@ -81,6 +85,27 @@ const closeProductModal = () => {
 </script>
 
 <style scoped>
+.username-p {
+  font-size: 2.3rem;
+}
+
+.username {
+  font-weight: 500;
+  font-size: 3rem;
+}
+
+.addProd-btn {
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+  padding: 1rem 2rem;
+  border: none;
+  font-size: 1.6rem;
+  color: #fff;
+  background-color: rgb(106, 106, 255);
+  cursor: pointer;
+  border-radius: 100px;
+}
+
 .overlay {
   position: absolute;
   top: 0;
@@ -97,8 +122,37 @@ img {
   height: 200px;
 }
 
-li {
+ul {
+  list-style: none;
+}
+
+ul li {
   margin-bottom: 40px;
+}
+
+ul li p {
+  font-size: 1.8rem;
+  margin-top: 0.5rem;
+}
+
+ul li p span {
+  font-weight: 500;
+}
+
+ul li img {
+  width: 15rem;
+  height: 15rem;
+  object-fit: cover;
+}
+
+.prod-delete-btn {
+  margin-top: 3rem;
+  background-color: transparent;
+  border: none;
+  outline: none;
   cursor: pointer;
+  font-size: 2rem;
+  font-weight: 500;
+  color: rgb(175, 45, 45);
 }
 </style>

@@ -4,6 +4,7 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import UserView from '@/views/UserView.vue'
 import SingleProductView from '@/views/SingleProductView.vue'
+import MessagesView from '@/views/MessagesView.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 const router = createRouter({
@@ -28,6 +29,14 @@ const router = createRouter({
       path: '/singleproduct/:id',
       name: 'singleproduct',
       component: SingleProductView
+    },
+    {
+      path: '/messages/:id/:user',
+      name: 'messages',
+      component: MessagesView,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/user',

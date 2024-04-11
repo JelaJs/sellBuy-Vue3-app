@@ -1,7 +1,7 @@
 <template>
   <main class="addProductPopup">
-    <h1>Add Product</h1>
-    <input type="file" @change="uploadLocal($event)" />
+    <h3>Add New Product</h3>
+    <input class="upload-img-input" type="file" @change="uploadLocal($event)" />
     <div v-if="myImg">
       <img :src="myImg" />
     </div>
@@ -19,8 +19,9 @@
         <option value="desktop">Desktop</option>
         <option value="bikes">Bikes</option>
         <option value="electronic">Electronic</option>
+        <option value="other">Other</option>
       </select>
-      <button type="submit">Submit</button>
+      <button class="add-btn" type="submit">Submit</button>
     </form>
   </main>
 </template>
@@ -73,7 +74,10 @@ const getFileName = (file) => {
 }
 
 const uploadLocal = (e) => {
-  if (!e.target.files) return
+  if (e.target.files.length === 0) {
+    imgs.value = null
+    return
+  }
 
   imgs.value = e.target.files
   extention.value = getFileExt(imgs.value[0])
@@ -174,7 +178,6 @@ onAuthStateChanged(getAuth(), (user) => {
 <style scoped>
 .addProductPopup {
   width: 80rem;
-  height: 30rem;
   position: absolute;
   background-color: #fff;
   border: 1px solid #ccc;
@@ -183,8 +186,65 @@ onAuthStateChanged(getAuth(), (user) => {
   transform: translate(-50%, -50%);
   padding: 2rem;
 }
+
+.addProductPopup h3 {
+  text-align: center;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #ccc;
+  font-size: 2.3rem;
+}
+
+.addProductPopup .upload-img-input {
+  margin-top: 2rem;
+  cursor: pointer;
+}
+
 img {
-  width: 200px;
-  height: 200px;
+  width: 10rem;
+  height: 10rem;
+  object-fit: cover;
+  margin-top: 1rem;
+}
+
+form {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+form input {
+  height: 3rem;
+  outline: none;
+  border: 1px solid #ccc;
+  padding-left: 1rem;
+}
+
+form textarea {
+  height: 10rem;
+  outline: none;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+form select {
+  height: 3rem;
+  outline: none;
+  border: 1px solid #ccc;
+}
+
+form .add-btn {
+  padding: 1rem 2rem;
+  background-color: rgb(106, 106, 255);
+  border: none;
+  color: #fff;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  font-weight: 500;
+  border-radius: 100px;
+  cursor: pointer;
+  width: 80%;
+  margin: 0 auto;
 }
 </style>

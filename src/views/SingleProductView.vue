@@ -7,9 +7,10 @@
           <p class="info-header">User Info</p>
           <p class="inner-info"><span>User:</span> {{ productData.username }}</p>
           <p class="inner-info"><span>Phone:</span> {{ productData.phone }}</p>
-          <button class="send-message" v-if="sendBtn" @click="sendMessage = true">
-            Send Message
-          </button>
+          <button class="send-message" v-if="sendBtn" @click="goToMessagePage">Send Message</button>
+          <p class="send-msg-info" v-if="!isUserLoggedIn">
+            <RouterLink to="/login">Login</RouterLink> to send a message to user
+          </p>
           <p class="info-header product-info">Product Info</p>
           <p class="inner-info"><span>Name:</span> {{ productData.productName }}</p>
           <p class="inner-info"><span>Description:</span> {{ productData.productDescription }}</p>
@@ -37,25 +38,19 @@
         />
         <button class="post-com-btn" @click="addComment">Add</button>
       </div>
-
-      <Message
-        v-if="sendMessage"
-        :id="id"
-        :username="productData.username"
-        :curUser="username"
-        :curUserId="curUserId"
-      />
+      <p v-if="!isUserLoggedIn"><RouterLink to="/login">Login</RouterLink> to post a comment</p>
     </div>
   </main>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
 import { v4 as uuidv4 } from 'uuid'
 import { onSnapshot, db, doc, onAuthStateChanged, getAuth, updateDoc } from '@/firebase'
-import Message from '@/components/Message.vue'
 
+const router = useRouter()
 const comment = ref('')
 const productData = ref(null)
 const productComms = ref([])
@@ -123,6 +118,10 @@ const removeComment = (id) => {
     productComments: productComms.value
   })
 }
+
+const goToMessagePage = () => {
+  router.push(`/messages/${id.value}/${productData.value.username}`)
+}
 </script>
 
 <style scoped>
@@ -158,6 +157,13 @@ img {
   color: #fff;
   background-color: rgb(106, 106, 255);
   border-radius: 10px;
+}
+
+.product-img-info-wrap .send-msg-info {
+  margin-top: 1.5rem;
+  margin-left: 0.5rem;
+  color: #000000a8;
+  font-weight: 500;
 }
 
 .product-img-info-wrap .inner-info {
@@ -224,6 +230,11 @@ input {
 
 .post-com-btn {
   width: 10%;
+}
+
+a {
+  text-decoration: none;
+  font-weight: 500;
 }
 
 .hide {
