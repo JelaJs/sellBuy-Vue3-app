@@ -8,6 +8,9 @@
           <p class="inner-info"><span>User:</span> {{ productData.username }}</p>
           <p class="inner-info"><span>Phone:</span> {{ productData.phone }}</p>
           <button class="send-message" v-if="sendBtn" @click="goToMessagePage">Send Message</button>
+          <button class="send-message" v-if="!sendBtn && isUserLoggedIn" @click="goToUserPage">
+            Update Product
+          </button>
           <p class="send-msg-info" v-if="!isUserLoggedIn">
             <RouterLink to="/login">Login</RouterLink> to send a message to user
           </p>
@@ -121,6 +124,10 @@ const removeComment = (id) => {
 
 const goToMessagePage = () => {
   router.push(`/messages/${id.value}/${productData.value.username}`)
+}
+
+const goToUserPage = () => {
+  router.push(`/user`)
 }
 </script>
 
