@@ -8,7 +8,7 @@
     <div v-if="!myImg">Add image</div>
     <form @submit.prevent="uploadData">
       <input type="text" v-model="productName" placeholder="Product Name" required />
-      <input type="number" v-model="productPrice" placeholder="Product Price" required />
+      <input type="number" v-model="productPrice" placeholder="Product Price in Euro" required />
       <textarea v-model="productDescription" placeholder="Product Description" required></textarea>
       <select v-model="productType" required>
         <option value="" disabled selected>Select Product Type</option>
@@ -58,9 +58,6 @@ const phone = ref(null)
 const userName = ref(null)
 
 const emit = defineEmits(['CloseModal'])
-
-//set fileds if product already exist
-
 const getFileExt = (file) => {
   let temp = file.name.split('.')
   let ext = temp.slice(temp.length - 1, temp.length)
@@ -91,7 +88,7 @@ reader.addEventListener('load', () => {
 })
 
 const uploadData = async () => {
-  console.log('imgs value', imgs.value)
+  //console.log('imgs value', imgs.value)
   if (
     !productName.value ||
     !productPrice.value ||
@@ -119,6 +116,7 @@ const uploadData = async () => {
     'state_changed',
     (snapshot) => {
       let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+      console.log(progress)
     },
     (error) => {
       console.log('img not uploaded', error.message)
@@ -157,7 +155,8 @@ onAuthStateChanged(getAuth(), (user) => {
   curUser.value = doc(db, 'users', user.uid)
 
   onSnapshot(existingProduct.value, (doc) => {
-    console.log('uslov prosao', doc.data())
+    //iscitavamo iz baze ako postoji za update
+    //console.log('uslov prosao', doc.data())
     const userProduct = doc.data()
     if (userProduct) {
       productName.value = userProduct.productName
@@ -168,7 +167,7 @@ onAuthStateChanged(getAuth(), (user) => {
   })
 
   onSnapshot(curUser.value, (doc) => {
-    console.log('curUser', doc.data())
+    //console.log('curUser', doc.data())
     phone.value = doc.data().phone
     userName.value = doc.data().username
   })
@@ -246,5 +245,12 @@ form .add-btn {
   cursor: pointer;
   width: 80%;
   margin: 0 auto;
+}
+
+/**Responsive */
+@media (max-width: 992px) {
+  .addProductPopup {
+    width: 90%;
+  }
 }
 </style>

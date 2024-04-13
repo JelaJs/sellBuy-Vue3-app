@@ -1,15 +1,16 @@
 <template>
-  <div class="container message-grid">
+  <div class="container-custom message-grid">
     <div class="users-div">
       <p class="users-header">Users:</p>
       <ul v-if="users.length > 0">
         <li v-for="user in users" :key="user.id" @click="goToUserChat(user.id, user.username)">
-          {{ user.username }}
+          {{ user.username }} {{ user.id === curUserId ? '(You)' : '' }}
         </li>
       </ul>
     </div>
     <div class="msg-wrap">
       <p class="user-header">To: {{ username }}</p>
+      <ul v-if="filteredMessages.length === 0"></ul>
       <ul v-if="filteredMessages.length > 0">
         <li
           :class="{ cur: curUserId === msg.senderId }"
@@ -38,13 +39,6 @@ import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { v4 as uuidv4 } from 'uuid'
 import { db, doc, setDoc, onSnapshot, onAuthStateChanged, getAuth, collection } from '@/firebase'
-
-/*const props = defineProps({
-  id: String,
-  username: String,
-  curUser: String,
-  curUserId: String
-})*/
 
 const router = useRouter()
 const route = useRoute()
@@ -146,6 +140,11 @@ watch([() => route.params.id, () => route.params.user], () => {
 </script>
 
 <style scoped>
+.container-custom {
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
 .message-grid {
   display: grid;
   grid-template-columns: 1fr 4fr;
@@ -216,7 +215,7 @@ watch([() => route.params.id, () => route.params.user], () => {
 }
 
 .message-grid .msg-wrap .input-btn-wrap {
-  bottom: 0;
+  bottom: 5px;
   width: 100%;
 }
 
@@ -237,5 +236,47 @@ watch([() => route.params.id, () => route.params.user], () => {
   color: #fff;
   border: none;
   cursor: pointer;
+}
+
+/**Responsive */
+@media (max-width: 768px) {
+  .message-grid .users-div ul li {
+    font-size: 1.6rem;
+  }
+
+  .container-custom {
+    padding: 0.5rem;
+  }
+
+  .message-grid .msg-wrap {
+    padding: 0.5rem;
+  }
+
+  .message-grid .users-div {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .message-grid {
+    grid-template-columns: 1fr 3fr;
+  }
+
+  .message-grid .msg-wrap .input-btn-wrap input {
+    width: 85%;
+  }
+
+  .message-grid .msg-wrap .input-btn-wrap button {
+    width: 15%;
+  }
+
+  .message-grid .msg-wrap ul li p {
+    font-size: 1.4rem;
+  }
+
+  .message-grid .users-div .users-header,
+  .message-grid .users-div .users-header {
+    font-size: 1.8rem;
+  }
 }
 </style>

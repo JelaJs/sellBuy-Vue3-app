@@ -3,13 +3,16 @@
     <div class="container">
       <h1>Buy and Sell Quickly</h1>
       <div class="findProd-wrap">
-        <p>Find Product:</p>
-        <input
-          v-model="searchProduct"
-          type="text"
-          placeholder="product name"
-          @input="searchForProduct"
-        />
+        <p>Sort Products:</p>
+        <div class="sort-btns-wrap">
+          <button class="sort-btn" @click="sortByDate">By date</button>
+          <button class="sort-btn" @click="sortByPriceToExp">
+            By Price(Cheapest to Expensive)
+          </button>
+          <button class="sort-btn" @click="sortByPriceToCheapest">
+            By Price(Most Expensive to Cheapest)
+          </button>
+        </div>
       </div>
       <ul v-if="prodRef">
         <li v-for="product in products" :key="product.id" @click="goTosingleProduct(product.id)">
@@ -27,62 +30,40 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import {
-  db,
-  getStorage,
-  sRef,
-  uploadBytesResumable,
-  getDownloadURL,
-  doc,
-  getDoc,
-  setDoc,
-  collection,
-  addDoc,
-  onSnapshot,
-  query,
-  orderBy,
-  where
-} from '@/firebase'
+import { db, collection, onSnapshot, query, orderBy } from '@/firebase'
 
 const router = useRouter()
 const products = ref([])
-//const dateSortedProducts = ref([])
-//const priceSortedProducts = ref([])
-//const priceToLowerSortedProducts = ref([])
 const prodRef = collection(db, 'products')
-//const sortedByDateRef = query(prodRef, orderBy('createdAt', 'desc')) //od najmladjeg ka najstarijem, ovo po difotu prvo mi je od najstarijeg do najmladjeg
-//const sortedByPriceRef = query(prodRef, orderBy('productPrice')) //od najjeftinijeg do najskupljeg
-//const toLowerSortedPriceRef = query(prodRef, orderBy('productPrice', 'desc'))
-const searchProduct = ref('')
-const searchTimer = ref(null)
+const sortedByDateRef = query(prodRef, orderBy('createdAt', 'desc')) //od najmladjeg ka najstarijem, ovo po difotu prvo mi je od najstarijeg do najmladjeg
+const sortedByPriceRef = query(prodRef, orderBy('productPrice')) //od najjeftinijeg do najskupljeg
+const toLowerSortedPriceRef = query(prodRef, orderBy('productPrice', 'desc'))
 
-onSnapshot(prodRef, (snapshot) => {
-  snapshot.docs.forEach((doc) => {
-    products.value.push({ ...doc.data(), id: doc.id })
+const onSnapShotCall = (ref) => {
+  onSnapshot(ref, (snapshot) => {
+    products.value = []
+    snapshot.docs.forEach((doc) => {
+      products.value.push({ ...doc.data(), id: doc.id })
+    })
   })
-  console.log(products.value)
-})
+}
+
+onSnapShotCall(prodRef)
+
+const sortByDate = () => {
+  onSnapShotCall(sortedByDateRef)
+}
+
+const sortByPriceToExp = () => {
+  onSnapShotCall(sortedByPriceRef)
+}
+
+const sortByPriceToCheapest = () => {
+  onSnapShotCall(toLowerSortedPriceRef)
+}
 
 const goTosingleProduct = (id) => {
   router.push(`/singleproduct/${id}`)
-}
-
-const searchForProduct = () => {
-  clearTimeout(searchTimer.value)
-  searchTimer.value = setTimeout(() => {
-    if (searchProduct.value === '') {
-      onSnapshot(prodRef, (snapshot) => {
-        snapshot.docs.forEach((doc) => {
-          products.value.push({ ...doc.data(), id: doc.id })
-        })
-      })
-
-      return
-    }
-    products.value = products.value.filter(
-      (prod) => prod.productName.trim().toLowerCase() === searchProduct.value.trim().toLowerCase()
-    )
-  }, 300)
 }
 </script>
 
@@ -99,15 +80,24 @@ h1 {
   gap: 0.5rem;
 }
 
+.findProd-wrap .sort-btns-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 .findProd-wrap p {
   font-size: 2rem;
 }
 
-.findProd-wrap input {
+.findProd-wrap .sort-btn {
   padding: 0.5rem 1rem;
+  border: none;
   outline: none;
-  border-radius: 10px;
-  border: 1px solid #ccc;
+  cursor: pointer;
+  background-color: rgb(106, 106, 255);
+  color: #fff;
+  border-radius: 100px;
 }
 
 ul {
@@ -124,8 +114,8 @@ ul li {
 }
 
 ul li img {
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
   border-radius: 10px;
   object-fit: cover;
 }
@@ -149,5 +139,56 @@ ul li .prod-desc {
 
 ul li .prod-price {
   font-size: 1.8rem;
+}
+
+/**Responsive Design */
+@media (max-width: 1200px) {
+  h1 {
+    font-size: 3.8rem;
+  }
+
+  ul {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 992px) {
+  ul li .prod-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  ul li .prod-desc {
+    font-size: 1.6rem;
+  }
+
+  ul li .prod-price {
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 3.2rem;
+  }
+
+  ul {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .findProd-wrap {
+    flex-direction: column;
+    align-items: start;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2.8rem;
+  }
+
+  ul {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

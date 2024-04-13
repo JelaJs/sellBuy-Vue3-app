@@ -62,17 +62,14 @@ const id = ref(route.params.id)
 const docRef = doc(db, 'products', id.value)
 const curUserRef = ref(null)
 const username = ref(null)
-const sendMessage = ref(false)
 const curUserId = ref(null)
 const sendBtn = ref(true)
 const isUserLoggedIn = ref(false)
-const toRemove = ref(true)
-//const phoneNumber = ref(null)
 
 onSnapshot(docRef, (doc) => {
   productData.value = doc.data()
   productComms.value = doc.data().productComments
-  console.log('Product comments', productComms.value)
+  //console.log('Product comments', productComms.value)
 })
 
 onAuthStateChanged(getAuth(), (user) => {
@@ -246,5 +243,39 @@ a {
 
 .hide {
   display: none;
+}
+
+/**Responsive */
+@media (max-width: 768px) {
+  .product-img-info-wrap .info-header {
+    font-size: 2rem;
+  }
+
+  .product-img-info-wrap .inner-info {
+    font-size: 1.6rem;
+  }
+
+  .product-img-info-wrap {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  ul li .com-btn-wrap p {
+    font-size: 1.4rem;
+  }
+
+  ul li .com-btn-wrap button {
+    font-size: 1.4rem;
+  }
+
+  input {
+    width: 85%;
+  }
+
+  .post-com-btn {
+    width: 15%;
+  }
 }
 </style>

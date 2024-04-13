@@ -27,18 +27,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import {
-  collection,
-  onSnapshot,
-  onAuthStateChanged,
-  getAuth,
-  db,
-  query,
-  doc,
-  updateDoc,
-  deleteField,
-  deleteDoc
-} from '@/firebase'
+import { collection, onSnapshot, onAuthStateChanged, getAuth, db, doc, deleteDoc } from '@/firebase'
 import AddProduct from '../components/AddProduct.vue'
 
 const addProduct = ref(false)
@@ -51,7 +40,6 @@ onAuthStateChanged(getAuth(), (user) => {
   if (user) {
     productRef.value = doc(db, 'products', user.uid)
     userRef.value = doc(db, 'users', user.uid)
-    //const docRef = doc(db, 'products', user.uid)
     onSnapshot(productRef.value, (doc) => {
       //console.log('doc data', { ...doc.data() })
       const objectData = doc.data()
@@ -154,5 +142,20 @@ ul li img {
   font-size: 2rem;
   font-weight: 500;
   color: rgb(175, 45, 45);
+}
+
+/**Responsive */
+@media (max-width: 576px) {
+  .username-p {
+    font-size: 2rem;
+  }
+
+  .username {
+    font-size: 2.2rem;
+  }
+
+  ul li p {
+    font-size: 1.6rem;
+  }
 }
 </style>

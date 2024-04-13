@@ -83,7 +83,7 @@ const register = () => {
       router.push('/user')
     })
     .catch((err) => {
-      console.log(err.message)
+      //console.log(err.message)
       registerError.value = err.message
     })
 }

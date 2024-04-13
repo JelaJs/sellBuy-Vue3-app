@@ -10,7 +10,11 @@
     </nav>
   </header>
 
-  <RouterView />
+  <RouterView v-slot="{ Component }">
+    <Transition name="page" mode="out-in">
+      <component :is="Component" />
+    </Transition>
+  </RouterView>
 </template>
 
 <script setup>
@@ -75,5 +79,41 @@ onMounted(() => {
   font-size: 2.1rem;
   font-weight: 400;
   cursor: pointer;
+}
+
+/**Transition */
+.page-enter-active,
+.page-leave-active {
+  transition: 400ms ease all;
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+}
+
+/**Responsive Design */
+@media (max-width: 1200px) {
+  .nav a {
+    font-size: 1.8rem;
+  }
+
+  .nav .btn-link-wrap button {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav a {
+    font-size: 1.4rem;
+  }
+
+  .nav .btn-link-wrap button {
+    font-size: 1.4rem;
+  }
+
+  .nav a.add-prod-link {
+    padding: 0.5rem 1rem;
+  }
 }
 </style>

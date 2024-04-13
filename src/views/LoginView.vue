@@ -19,6 +19,11 @@
           <RouterLink to="/register">Register</RouterLink>
         </div>
         <p v-if="loginError">{{ loginError }}</p>
+        <div class="demo-info">
+          <p>Demo account:</p>
+          <p>email: niko@nikolic.com</p>
+          <p>password: test1234</p>
+        </div>
       </form>
     </div>
   </main>
@@ -38,7 +43,7 @@ const loginError = ref(null)
 
 const login = () => {
   signInWithEmailAndPassword(getAuth(), email.value, password.value)
-    .then((cred) => {
+    .then(() => {
       //console.log('user created', cred.user.uid)
       //userId.value = cred.user.uid
       email.value = ''
@@ -47,7 +52,7 @@ const login = () => {
       router.push('/user')
     })
     .catch((err) => {
-      console.log(err.message)
+      //console.log(err.message)
       loginError.value = err.message
     })
 }
@@ -116,5 +121,33 @@ const login = () => {
   align-items: center;
   gap: 0.5rem;
   justify-content: center;
+}
+
+.demo-info {
+  text-align: center;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/**Responsive */
+@media (max-width: 768px) {
+  .form {
+    width: 90%;
+    padding: 1rem 2rem;
+  }
+
+  .form button {
+    font-size: 1.8rem;
+    padding: 1rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form {
+    width: 100%;
+    padding: 1rem 1rem;
+  }
 }
 </style>
