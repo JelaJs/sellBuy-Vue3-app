@@ -1,6 +1,6 @@
 # buySellApp
 
-This app is made using Vue 3(Composition Api) and Firebase.
+This app is made using Vue 3(Composition Api) and Firebase. App is also fully responsive, so it can be used on mobile, tablet, laptop, and desktop devices.
 
 The application is developed for users who want to sell or buy something. Here users can find the products they are interested in as well as all the information about the product itself as well as the person selling it.
 
