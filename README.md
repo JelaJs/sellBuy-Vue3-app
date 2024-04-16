@@ -1,35 +1,7 @@
 # buySellApp
 
-This template should help get you started developing with Vue 3 in Vite.
+This app is made using Vue 3(Composition Api) and Firebase.
 
-## Recommended IDE Setup
+The application is developed for users who want to sell or buy something. Here users can find the products they are interested in as well as all the information about the product itself as well as the person selling it.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+Also, users can log in and leave comments as well as contact the user who sells the product directly on the application. In addition, after the user has logged in, he can place his product, which will be listed with other ads. User can edit and delete product at any time.
