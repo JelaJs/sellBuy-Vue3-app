@@ -5,6 +5,7 @@
       <RouterLink to="/login" v-if="!isLoggedIn">Login</RouterLink>
       <div v-if="isLoggedIn" class="btn-link-wrap">
         <RouterLink class="add-prod-link" to="/user">Add Product</RouterLink>
+        <button v-if="curUserId" @click="goToMsgPage">Msg</button>
         <button @click="handleSignout">Sign out</button>
       </div>
     </nav>
@@ -21,10 +22,12 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getAuth, signOut, onAuthStateChanged } from '@/firebase'
+import { getAuth, signOut, onAuthStateChanged, onSnapshot, doc, db } from '@/firebase'
 
 const isLoggedIn = ref(false)
 const router = useRouter()
+const curUserId = ref(null)
+const curUser = ref(null)
 
 const handleSignout = () => {
   signOut(auth).then(router.push('/'))
@@ -37,11 +40,20 @@ onMounted(() => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       isLoggedIn.value = true
+      curUserId.value = user.uid
+
+      onSnapshot(doc(db, 'users', curUserId.value), (doc) => {
+        curUser.value = doc.data().username
+      })
     } else {
       isLoggedIn.value = false
     }
   })
 })
+
+const goToMsgPage = () => {
+  router.push(`/messages/${curUserId.value}/${curUser.value}`)
+}
 </script>
 
 <style scoped>
