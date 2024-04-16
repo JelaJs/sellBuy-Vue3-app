@@ -145,6 +145,7 @@ watch([() => route.params.id, () => route.params.user], () => {
   margin: 0 auto;
   padding: 0 2rem;
 }
+
 .message-grid {
   display: grid;
   grid-template-columns: 1fr 4fr;
@@ -152,7 +153,7 @@ watch([() => route.params.id, () => route.params.user], () => {
 }
 
 .message-grid .users-div {
-  height: 100vh;
+  min-height: 60rem;
   background-color: #f8f8f8;
   padding: 2rem;
 }
@@ -189,7 +190,7 @@ watch([() => route.params.id, () => route.params.user], () => {
 
 .message-grid .msg-wrap {
   padding: 2rem;
-  height: 100vh;
+  min-height: 60rem;
   position: relative;
 }
 
@@ -215,7 +216,8 @@ watch([() => route.params.id, () => route.params.user], () => {
 }
 
 .message-grid .msg-wrap .input-btn-wrap {
-  bottom: 5px;
+  position: absolute;
+  bottom: 0;
   width: 100%;
 }
 
