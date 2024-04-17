@@ -18,10 +18,15 @@
           <p><span>Name:</span> {{ userProduct.productName }}</p>
           <p><span>Price:</span> {{ userProduct.productPrice }} €</p>
           <p><span>Description:</span> {{ userProduct.productDescription }}</p>
-          <button class="prod-delete-btn" @click="deleteProduct">Delete</button>
+          <button class="prod-delete-btn" @click="deletePopup = true">Delete</button>
         </li>
       </ul>
     </div>
+    <DeleteProduct
+      v-if="deletePopup"
+      @deleteProduct="deleteCurProduct"
+      @closeDelPopup="deletePopup = false"
+    />
   </main>
 </template>
 
@@ -29,12 +34,14 @@
 import { ref } from 'vue'
 import { collection, onSnapshot, onAuthStateChanged, getAuth, db, doc, deleteDoc } from '@/firebase'
 import AddProduct from '../components/AddProduct.vue'
+import DeleteProduct from '@/components/DeleteProduct.vue'
 
 const addProduct = ref(false)
 const userProduct = ref(null)
 const productRef = ref(null)
 const userRef = ref(null)
 const username = ref(null)
+const deletePopup = ref(false)
 
 onAuthStateChanged(getAuth(), (user) => {
   if (user) {
@@ -58,11 +65,11 @@ onAuthStateChanged(getAuth(), (user) => {
   }
 })
 
-const deleteProduct = () => {
-  //await deleteDoc(doc(productRef.value, product))
+const deleteCurProduct = () => {
   deleteDoc(productRef.value).then(() => {
     onSnapshot(collection(db, 'products'), () => {
       userProduct.value = null
+      deletePopup.value = false
     })
   })
 }

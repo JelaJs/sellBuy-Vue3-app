@@ -96,7 +96,7 @@ onAuthStateChanged(getAuth(), (user) => {
 })
 
 const addComment = () => {
-  if (comment.value === '') return
+  if (comment.value.trim() === '') return
   productComms.value.push({
     user: username.value,
     comment: comment.value,
