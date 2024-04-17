@@ -27,6 +27,7 @@
           id="message-input"
           @keyup.enter="sendMessage"
           autocomplete="off"
+          placeholder="send message"
         />
         <button @click="sendMessage">Send</button>
       </div>
@@ -89,7 +90,7 @@ onSnapshot(messagesRef, (doc) => {
 })
 
 const sendMessage = () => {
-  if (message.value === '') return
+  if (message.value.trim() === '') return
 
   const newMessage = {
     message: message.value,
