@@ -1,9 +1,9 @@
 # buySellApp
 
-This app is made using Vue 3(Composition Api) and Firebase. App is also fully responsive, so it can be used on mobile, tablet, laptop, and desktop devices.
+This app is crafted using Vue 3 with the Composition API, Vite, and Firebase.
 
-The application is developed for users who want to sell or buy something. Here users can find the products they are interested in as well as all the information about the product itself as well as the person selling it.
+Designed for users looking to buy or sell items, the application offers a platform to discover products of interest along with comprehensive details about each listing and its seller.
 
-Also, users can log in and leave comments as well as contact the user who sells the product directly on the application. In addition, after the user has logged in, he can place his product, which will be listed with other ads. User can edit and delete product at any time.
+Users have the ability to log in, leave comments, and directly contact sellers through the app. Additionally, authenticated users can post their own products, which are then showcased alongside other listings. They retain the flexibility to edit or delete their listings at any time.
 
 Try app here: https://ibuyisell.netlify.app/
